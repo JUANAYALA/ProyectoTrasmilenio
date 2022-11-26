@@ -18,7 +18,7 @@ mysql.init_app(app)
 
 @app.route('/')
 def inicio():
-    return render_template('sitio/index.php')
+    return render_template('sitio/index.html')
 
 @app.route('/img/<imagen>')
 def imagenes(imagen):    
@@ -30,36 +30,57 @@ def imagenes(imagen):
 
 @app.route('/Formulario')
 def form_prin():
-    return render_template('admin/form_prin.php') 
+    return render_template('admin/form_prin.html') 
 
 @app.route('/FormularioU')
 def form_prinus():
-    return render_template('usuarios/formulaU.php') 
+    return render_template('usuarios/formulaU.html') 
   
 
 
 @app.route('/Login')
 def login():
 
-    return render_template('sitio/login.php')
+    return render_template('sitio/login.html')
 
 
 @app.route('/sitio/login', methods=['POST'])
 def login_post():
-    _documentolo=request.form['textDoclo']
-    _password=request.form['textpass']
-    print(_documentolo)
-    print(_password)
-    if _documentolo=="1030696488":
-        session["login"]=True
-        session["documento"]="Administrador"
-        return redirect("/AdministracionN")   
+               
+           
+        _documentolo=request.form['textDoclo']
+        _password=request.form['textpass']
+        print(_documentolo)
+        print(_password)
+         
+        if _documentolo=="1030696488" and _password==_password=="123456":
+            session["login"]=True
+            session["documento"]="Administrador"
+            return redirect("/AdministracionN")   
+        
+        if _documentolo!="1030696488":
+            session["login"]=True
+            session["documento"]="Administrador"
+            return redirect("/NoticiasU")
 
-    if _documentolo!="1030696488":
-        session["login"]=True
-        session["documento"]="Usuario"
-        return redirect("/NoticiasU")
+        return render_template('sitio/index.html')
 
+        _id=request.form['textDoclo']
+        print(_id)
+        
+        conexion=mysql.connect()
+        cursor=conexion.cursor()
+        cursor.execute("SELECT documento FROM form_registro where documento=%s",(_id))
+        noti=cursor.fetchall()
+        conexion.commit()            
+
+        if _documentolo==noti:
+            session["login"]=True
+            session["documento"]="Usuario"
+            return redirect("/NoticiasU")
+
+
+        
 
 @app.route('/Noticias')
 def Noticias():
@@ -70,7 +91,7 @@ def Noticias():
     conexion.commit()
     #print (noticia)
 
-    return render_template('admin/Noticias.php', noticia=noticia)
+    return render_template('admin/Noticias.html', noticia=noticia)
 
 
 @app.route('/AdministracionN')
@@ -82,7 +103,7 @@ def Administrador_Not():
     conexion.commit()
     #print (noticia)
 
-    return render_template('admin/administracionN.php', noticia=noticia)
+    return render_template('admin/administracionN.html', noticia=noticia)
 
 @app.route('/AdministracionU')
 def Administrador_Usu():
@@ -93,7 +114,7 @@ def Administrador_Usu():
     conexion.commit()
     #print (noticia)
 
-    return render_template('admin/administracionU.php', usuario=usuario)
+    return render_template('admin/administracionU.html', usuario=usuario)
 
  #*********************FORMULARIO USUARIOS****************      
 @app.route('/NoticiasU')
@@ -105,7 +126,7 @@ def Noti_usuario():
     conexion.commit()
     #print (noticia)
 
-    return render_template('usuarios/NoticiaU.php', noticia=noticia)
+    return render_template('usuarios/NoticiaU.html', noticia=noticia)
     
 
 
@@ -119,7 +140,7 @@ def Administrador():
     conexion.commit()
     #print (noticia)
 
-    return render_template('admin/administracion.php', noticia=noticia)
+    return render_template('admin/administracion.html', noticia=noticia)
 
 
 
@@ -127,11 +148,11 @@ def Administrador():
 
 @app.route('/Cerrarsesion')
 def Logout():
-    return render_template('sitio/index.php')
+    return render_template('sitio/index.html')
 
 @app.route('/Registro')
 def Registro():
-    return render_template('sitio/Registro.php')
+    return render_template('sitio/Registro.html')
 
 #*********************FORMULARIO ADM********************************
 
@@ -165,7 +186,7 @@ def admin_noticias_guardar():
     cursor.execute(sqlfp,datos)
     conexion.commit()
 
-    return redirect('/Administracion')
+    return redirect('/AdministracionU')
 
 #*********************FORMULARIOS USUARIOS ****************
 
@@ -246,10 +267,30 @@ def admin_Noticias_borrar():
     conexion.commit()
    
 
-    return redirect('/Administracion')   
+    return redirect('/AdministracionN')   
 
 
+@app.route('/admin/Noticias/borrarU', methods=['POST'])
+def admin_Noticias_borrarU():
 
+    _id=request.form['textId']
+    print(_id)
+    
+    conexion=mysql.connect()
+    cursor=conexion.cursor()
+    cursor.execute("SELECT id_fr FROM form_registro where id_fr=%s",(_id))
+    noti=cursor.fetchall()
+    conexion.commit()
+        
+
+    conexion=mysql.connect()
+    conexion=mysql.connect()
+    cursor=conexion.cursor()
+    cursor.execute("Delete from form_registro where id_fr=%s",(_id))
+    conexion.commit()
+   
+
+    return redirect('/AdministracionU')  
 
 if __name__ == '__main__':
     app.run(debug=True)

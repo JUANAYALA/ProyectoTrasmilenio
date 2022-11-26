@@ -1,4 +1,4 @@
-{% include 'admin/cabeceraADM.php' %}
+{% include 'admin/cabeceraADM.html' %}
 
 <div>
   <div class="container">
@@ -50,7 +50,7 @@
                       <td>{{ Noticias[8] }}</td>                       
                       <td>
                         <form action="/admin/Noticias/borrar" method="post">                        
-                          <h6><input value="{{ Noticias[0] }}" type="text"  name="textId" id="textId"></h6>
+                          <h6><input value="{{ Noticias[0] }}" type="hidden"  name="textId" id="textId"></h6>
                           <button  type="submit" class="btn btn-danger">ELIMINAR</button>                        
                           </form>                 
                         
@@ -73,4 +73,4 @@
 </div>
 
   
-{% include 'admin/pieADM.php' %}
+{% include 'admin/pieADM.html' %}
